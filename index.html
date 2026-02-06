@@ -2,138 +2,112 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Di Tub SUPREME FIX</title>
+    <title>Di Tub ETERNITY</title>
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --text: #fff; --red: #ff0000; --blue: #3ea6ff; --gray: #aaa; }
-        body.blue { --bg: #001a33; --card: #002b4d; --text: #7fdbff; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; }
-
+        :root { --bg: #001a33; --card: #002b4d; --text: #7fdbff; --red: #ff0000; --gray: #aaa; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; overflow-x: hidden; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: sticky; top:0; background: var(--bg); z-index: 1000; border-bottom: 1px solid #333; }
-        .tabs { display: flex; gap: 15px; padding: 15px 20px; background: var(--bg); position: sticky; top: 60px; z-index: 900; }
-        .tab { padding: 8px 16px; border-radius: 20px; background: #333; cursor: pointer; font-size: 14px; font-weight: bold; border: none; color: white; }
+        .tabs { display: flex; gap: 10px; padding: 10px 20px; background: var(--bg); position: sticky; top: 55px; z-index: 999; border-bottom: 1px solid #222; }
+        .tab { padding: 6px 15px; border-radius: 20px; background: #113355; cursor: pointer; font-size: 13px; font-weight: bold; border: none; color: white; }
         .tab.active { background: var(--text); color: var(--bg); }
-
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 20px; }
-        .shorts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px; }
-
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; }
-        .card video { width: 100%; aspect-ratio: 16/9; background: #000; }
-
-        .short-card { position: relative; aspect-ratio: 9/16; border-radius: 15px; overflow: hidden; background: #000; border: 1px solid #444; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
+        .shorts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
+        .short-card { position: relative; aspect-ratio: 9/16; border-radius: 15px; overflow: hidden; background: #000; cursor: pointer; border: 1px solid #444; }
+        video { width: 100%; aspect-ratio: 16/9; background: #000; display: block; }
         .short-card video { width: 100%; height: 100%; object-fit: cover; }
-        
         .btn { background: var(--red); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        input { background: #000; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 20px; outline: none; margin-bottom: 5px; }
         .hidden { display: none !important; }
-        input { background: #121212; color: white; border: 1px solid #333; padding: 10px; border-radius: 20px; outline: none; }
     </style>
-    <script src="auth.js"></script>
-    <script src="actions.js"></script>
-    <script src="search.js"></script>
 </head>
 <body>
-
-<div class="header">
-    <a href="/" style="color:red; font-size:22px; font-weight:bold; text-decoration:none">▶ Di Tub</a>
-    <div style="width:40%">
-        <!-- Вернул ID для поиска -->
-        <input type="text" id="di_phantom_search" oninput="searchVideos()" placeholder="Поиск..." autocomplete="off" style="width:100%">
+    <div class="header">
+        <a href="/" style="color:red; font-size:20px; font-weight:bold; text-decoration:none">▶ Di Tub ETERNITY</a>
+        <div style="width:40%"><input type="text" id="di_phantom_search" oninput="searchVideos()" placeholder="Поиск..." autocomplete="off" style="width:100%"></div>
+        <div id="userArea"><button onclick="document.getElementById('authWin').classList.remove('hidden')" class="btn">ВХОД</button></div>
     </div>
-    <div id="userArea"><button onclick="document.getElementById('authWin').classList.remove('hidden')" class="btn">Вход</button></div>
-</div>
-
-<div class="tabs">
-    <button class="tab active" id="btn-vids" onclick="switchTab('video')">Видео</button>
-    <button class="tab" id="btn-shorts" onclick="switchTab('shorts')">Shorts ⚡</button>
-    <button class="tab" onclick="document.getElementById('uploadWin').classList.toggle('hidden')">Создать +</button>
-    <div id="settingsArea" class="hidden" style="display:flex; gap:5px; margin-left:auto">
-        <button onclick="applyTheme('blue')" class="tab">Blue</button>
-        <button onclick="logout()" class="btn">Выход</button>
+    
+    <div class="tabs">
+        <button class="tab active" id="btn-vids" onclick="switchTab('video')">Видео</button>
+        <button class="tab" id="btn-shorts" onclick="switchTab('shorts')">Shorts ⚡</button>
+        <button class="tab" onclick="document.getElementById('uploadWin').classList.toggle('hidden')">Загрузить +</button>
+        <button onclick="logout()" class="btn" style="margin-left:auto; background:#333">Выход</button>
     </div>
-</div>
 
-<div id="uploadWin" class="hidden" style="padding:20px; background:var(--card); margin:10px 20px; border-radius:15px; border:1px dashed var(--red)">
-    <form action="/upload-video" method="POST" enctype="multipart/form-data">
-        <input type="text" name="title" placeholder="Название" required>
-        <select name="isShorts" class="tab">
-            <option value="false">Видео</option>
-            <option value="true">Shorts</option>
-        </select>
-        <input type="hidden" name="author" id="authorInp">
-        <input type="file" name="video" required>
-        <button type="submit" class="btn">Опубликовать</button>
-    </form>
-</div>
-
-<div id="grid" class="video-grid"></div>
-
-<div id="authWin" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:flex; align-items:center; justify-content:center">
-    <div style="background:#111; padding:30px; border-radius:20px; text-align:center">
-        <h3>Di Tub</h3>
-        <input type="text" id="log" placeholder="Логин"><br><br>
-        <input type="password" id="pas" placeholder="Пароль"><br><br>
-        <button onclick="auth('register')" class="btn">Создать</button>
-        <button onclick="auth('login')" class="btn" style="background:#333">Войти</button>
+    <div id="uploadWin" class="hidden" style="padding:20px; background:var(--card); margin:10px; border-radius:15px; border:1px dashed red">
+        <form action="/upload-video" method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Название видео" required style="width:95%"><br>
+            <input type="text" name="videoLink" placeholder="Вставь прямую ссылку на видео (mp4)..." style="width:95%"><br>
+            <p style="font-size:11px; margin:5px 0">ИЛИ выбери файл:</p>
+            <input type="file" name="video" accept="video/*"><br><br>
+            <select name="isShorts" class="tab"><option value="false">Видео (16:9)</option><option value="true">Shorts (9:16)</option></select>
+            <input type="hidden" name="author" id="authorInp">
+            <button type="submit" class="btn">ОПУБЛИКОВАТЬ 🚀</button>
+        </form>
     </div>
-</div>
 
-<script>
-    let currentTab = 'video';
+    <div id="grid" class="video-grid"></div>
 
-    function switchTab(type) {
-        currentTab = type;
-        document.getElementById('btn-vids').classList.toggle('active', type === 'video');
-        document.getElementById('btn-shorts').classList.toggle('active', type === 'shorts');
-        document.getElementById('grid').className = type === 'video' ? 'video-grid' : 'shorts-grid';
-        loadVideos();
-    }
+    <div id="authWin" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:flex; align-items:center; justify-content:center">
+        <div style="background:#001a33; padding:30px; border-radius:20px; text-align:center; border:1px solid #333">
+            <h3>Вход / Регистрация</h3>
+            <input type="text" id="log" placeholder="Логин"><br><br>
+            <input type="password" id="pas" placeholder="Пароль"><br><br>
+            <button onclick="auth('register')" class="btn">Создать</button>
+            <button onclick="auth('login')" class="btn" style="background:#333">Войти</button>
+            <p onclick="document.getElementById('authWin').classList.add('hidden')" style="cursor:pointer;color:gray;margin-top:10px">Закрыть</p>
+        </div>
+    </div>
 
-    async function loadVideos() {
-        const res = await fetch('/list-videos');
-        const vids = await res.json();
-        renderVids(vids.filter(v => (v.type || 'video') === currentTab));
-    }
-
-    function renderVids(vids) {
-        const user = JSON.parse(localStorage.getItem('diUser') || '{}');
-        const grid = document.getElementById('grid');
-        
-        grid.innerHTML = vids.reverse().map(v => {
-            if (currentTab === 'video') {
-                return `
-                <div class="card">
-                    <video controls src="/videos/${v.url}" onplay="registerView('${v.id}')"></video>
-                    <div style="padding:12px">
-                        <div style="display:flex; justify-content:space-between">
-                            <b class="v-title">${v.title}</b>
-                            ${user.login === v.author ? `<span onclick="deleteVideo('${v.id}','${v.author}')" style="cursor:pointer">🗑️</span>` : ''}
+    <script src="auth.js"></script>
+    <script src="actions.js"></script>
+    <script>
+        let currentTab = 'video';
+        function switchTab(t) { 
+            currentTab = t; 
+            document.getElementById('btn-vids').classList.toggle('active', t==='video');
+            document.getElementById('btn-shorts').classList.toggle('active', t==='shorts');
+            document.getElementById('grid').className = t==='video' ? 'video-grid' : 'shorts-grid';
+            loadVideos();
+        }
+        async function loadVideos() {
+            const res = await fetch('/list-videos');
+            const vids = await res.json();
+            renderVids(vids.filter(v => (v.type || 'video') === currentTab));
+        }
+        function renderVids(vids) {
+            const user = JSON.parse(localStorage.getItem('diUser') || '{}');
+            document.getElementById('grid').innerHTML = vids.reverse().map(v => {
+                // ГЛАВНЫЙ ФИКС ССЫЛОК
+                const finalSrc = v.isExternal ? v.url : `/videos/${v.url}`;
+                
+                if (currentTab === 'video') {
+                    return `<div class="card">
+                        <video controls src="${finalSrc}"></video>
+                        <div style="padding:10px">
+                            <b class="v-title">${v.title}</b><br>
+                            <small>${v.author} • <span onclick="likeVideo('${v.id}')" style="color:red;cursor:pointer">❤️ ${v.likes}</span></small>
                         </div>
-                        <p style="font-size:12px; color:gray">👤 ${v.author} • <span onclick="likeVideo('${v.id}')" style="color:red; cursor:pointer">❤️ ${v.likes}</span></p>
-                        
-                        <!-- Вернул комменты -->
-                        <div class="comments">
-                            <form action="/comment/${v.id}" method="POST" style="display:flex; gap:5px">
-                                <input type="hidden" name="user" value="${user.login || 'Гость'}">
-                                <input type="text" name="text" placeholder="Коммент..." required style="flex:1; font-size:11px">
-                                <button type="submit" class="btn">➤</button>
-                            </form>
-                            ${(v.comments || []).slice(-2).map(c => `<div style="font-size:11px; margin-top:5px"><b>${c.user}:</b> ${c.text}</div>`).join('')}
+                    </div>`;
+                } else {
+                    return `<div class="short-card" onclick="this.querySelector('video').play()">
+                        <video loop src="${finalSrc}"></video>
+                        <div style="position:absolute; bottom:10px; left:10px; text-shadow:1px 1px 2px black">
+                            <b class="v-title">${v.title}</b><br><small>❤️ ${v.likes}</small>
                         </div>
-                    </div>
-                </div>`;
-            } else {
-                return `
-                <div class="short-card">
-                    <video loop src="/videos/${v.url}" onclick="this.play()" onplay="registerView('${v.id}')"></video>
-                    <div style="position:absolute; bottom:10px; left:10px; color:white; text-shadow:1px 1px 5px black">
-                        <b class="v-title">${v.title}</b><br>
-                        <span onclick="likeVideo('${v.id}')" style="cursor:pointer">❤️ ${v.likes}</span>
-                    </div>
-                </div>`;
-            }
-        }).join('');
-    }
-
-    document.addEventListener('DOMContentLoaded', loadVideos);
-</script>
+                    </div>`;
+                }
+            }).join('');
+        }
+        function searchVideos() {
+            const q = document.getElementById('di_phantom_search').value.toLowerCase();
+            document.querySelectorAll('.card, .short-card').forEach(c => {
+                c.style.display = c.querySelector('.v-title').innerText.toLowerCase().includes(q) ? 'block' : 'none';
+            });
+        }
+        document.addEventListener('DOMContentLoaded', loadVideos);
+    </script>
 </body>
 </html>
+
