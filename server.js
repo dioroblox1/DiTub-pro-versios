@@ -18,8 +18,6 @@ function writeDB(data) { fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// ГЛАВНЫЙ ФИКС: Сервер ищет файлы прямо в корневой папке
 app.use(express.static(__dirname)); 
 app.use('/videos', express.static(UPLOADS_DIR));
 
@@ -48,13 +46,19 @@ app.post('/login', (req, res) => {
     res.json(user);
 });
 
+// ОБНОВЛЕННАЯ ЗАГРУЗКА (Файл или Ссылка)
 app.post('/upload-video', upload.single('video'), (req, res) => {
     const db = readDB();
+    const videoUrl = req.file ? req.file.filename : req.body.videoLink;
+
+    if (!videoUrl) return res.status(400).send('Видео не найдено!');
+
     db.videos.push({
         id: Date.now().toString(),
         title: req.body.title,
         author: req.body.author,
-        url: req.file.filename,
+        url: videoUrl,
+        isExternal: !req.file, // Если нет файла, значит это внешняя ссылка
         type: req.body.isShorts === 'true' ? 'shorts' : 'video',
         likes: 0,
         views: 0,
@@ -93,6 +97,6 @@ app.post('/like/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('Di Tub SUPREME LIVE'));
+app.listen(PORT, () => console.log('Di Tub ETERNITY LIVE'));
 
 
